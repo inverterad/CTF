@@ -11,7 +11,7 @@ Uppvärmning # 1
 http://challs.crate.nu:36965/
 
 6 siffror PIN som ska lösas.
-Jag tittar i BURP suite och kommer åt func.js som visar koden, hur den fungerar, hittar att correctCode, dvs NDQ1NTEy, borde vara koden. Det är kodat i Base64. Så avkodade den och fick fram 445512 vilket gav mig koden och flaggan:
+Jag tittar i BURP suite och kommer åt func.js som visar koden. Försöker förstå hur den fungerar. Hittar att correctCode, dvs NDQ1NTEy, borde vara koden. Det är kodat i Base64. Avkodar den och får fram 445512 vilket ger mig koden och flaggan:
 
 cratectf{funky_monkey}
 
@@ -21,7 +21,7 @@ Uppvärmning # 2
 
 http://challs.crate.nu:13568
 
-BURP suite gav mig en script.js-fil som hade en url i sig som pekade till "flag12621561278416.html" som innehöll flaggan:
+BURP suite ger mig en script.js-fil som har en url i sig som pekar till "flag12621561278416.html" som innehåller flaggan:
 
 cratectf{det_är_inte_lätt_att_komma_ihåg_funktionsnamn_ibland}
 
@@ -31,7 +31,7 @@ Uppvärmning # 3
 
 "Det finns en flagga lagrad för domänen flag.ctf.crate.foi.se."
 
-Så jag kollade på https://mxtoolbox.com/ och letade rätt på en txt dns record med flaggan:
+Så jag kollar på https://mxtoolbox.com/ och letar rätt på en txt dns record med flaggan:
 
 cratectf{maybe_start_using_txt_records_instead_of_s3_buckets}
 
@@ -53,12 +53,14 @@ wrong data byte #16 should be 0x10 but was 0x61
 Vilket blir från hex: and it shall be echoedd it shall be echo
 cratectf{and_it_shall_be_echoedd_it_shall_be_echo} stämde inte.
 
-Får återkomma hit sen..
-Ganska mycket senare..
+Får återkomma hit senare..
 
-Wireshark avslöjade att det fanns mer information i pingen än det ovanstående, eko.crate.nu ville att man skulle skicka "gief flag" så jag körde:
+
+Tillbaka ganska mycket senare.
+
+Wireshark avslöjar att det finns mer information i pingen än det ovanstående, eko.crate.nu ville att man skulle skicka "gief flag" så jag kör:
 sudo hping3 -1 88.131.81.114 -d 40 -e "gief flag"
-Vilket gav mig svaret via Wireshark:
+Vilket ger mig svaret via Wireshark:
 
 '[RU
 EDXQr
@@ -82,7 +84,7 @@ cratectf{this_is_why_we_need_buffer_overflow_protections}
 Uppvärmning #6
 
 
-Här provade jag mig fram manuellt tills jag förstod hur man skulle få till rätt kombination.
+Här provar jag mig fram manuellt tills jag förstår hur man ska få till rätt kombination.
 
 echo -e "\x00\x00\x00\x00\x00\x00\x00\x00\x78\x56\x34\x12" | nc challs.crate.nu 21572
 
@@ -125,13 +127,15 @@ Det verkar vara postgresSQL.
 
 WzzO%' AND (SELECT (CASE WHEN (5741=5741) THEN NULL ELSE CAST((CHR(70)||CHR(103)||CHR(114)||CHR(75)) AS NUMERIC) END)) IS NULL AND 'DRPk%'='DRPk
 
-Det blev ett annat kommando:
-sqlmap -u http://challs.crate.nu:8901/ -a --forms --crawl=2 vilket i princip är samma, tror jag svarade på följdfrågorna lite annorlunda dock. Vet inte riktigt vad jag gjorde annorlunda annat än att jag sökte efter "flag" istället för blank och körde random. Hmm.
+Det blev ett annat kommando som löste det till slut:<br>
+<code>sqlmap -u http://challs.crate.nu:8901/ -a --forms --crawl=2</code>, vilket i princip är samma kommando, tror jag svarade på följdfrågorna lite annorlunda dock. Vet inte riktigt vad jag gjorde annorlunda annat än att jag sökte efter "flag" istället för blank när sqlmap frågade mig.
 
 sqlmap började i alla fall att spotta ur sig massor med mer information än tidigare och det gav flaggan till slut i strömmen av data.
 
 Flaggan:
 cratectf{efterföljarinsprutning}
+
+<br>Jag blev varse om programmet sqlmap i och med den här flaggan och tänkte inte på att det här var ett verktyg som bruteforce:ar. Vilket enligt reglerna skulle undvikas. Men man lär sig så länge man lever.
 
 ## Eventually a Flag
 
@@ -148,7 +152,7 @@ cratectf{en ganska så lång flagga. mycket taskigt va? aja, den kanske tar slut
 ## Kattallergiker
 
 Blev tvungen att ta chatgpt till hjälp för att få fram korrekt kod för att få ut flaggan.
-Jag var inte bekant alls med språket som jag använde till slut så den här kändes inte riktigt ok att få fram, ska forska mer runt varför det "språket" fungerade.
+Jag var inte bekant alls med språket som jag använde till slut. All kod fick jag från ChatGPT, vilket känns tråkigt, men då det var ett helt nytt shell för mig och språket var helt främmande så ansåg jag att det var ok. Ska försöka ta reda på lite mer om den typen av shell som användes här.
 
 Provade först "while IFS= read -r line; do printf "%s\n" "$line"; done < flag.txt" Men de hade lagt till en fälla för det så det fick bli följande kod: 
 
@@ -179,6 +183,8 @@ cratectf{hoppas_vi_ses_igen_2026}
 
 ## Buslätt
 
+Den här var klurig, det tog nästan hela dagen och jag löste det tack vare att jag berättade för min sambo om problemet och när jag läste upp beskrivningen så tänkte jag en gång extra på varför det stod Buslätt med stort B och sedan var det bara en googling bort.
+
 Hållplats Buslätt, Uddevalla
 58.312963331802, 11.878866311721913
 
@@ -186,7 +192,7 @@ cratectf{en_sl\u00e4tt_som_heter_bu}
 
 ## Evenemang
 
-Lite pinsamt hur jag löste det, letade fram alla .exe-processer som startade med Id 4688 och sedan pilade jag runt tills en såg annorlunda ut, visade sig att parent process var 756.exe på en och det visade sig vara boven.
+Lite pinsamt hur jag löste det, letade fram alla .exe-processer som startade med Id 4688 och sedan kollade jag på dem en efter en tills en såg annorlunda ut, visade sig att parent process var 756.exe på en och det visade sig vara boven.
 
 cratectf{756.exe}
 
@@ -194,7 +200,7 @@ cratectf{756.exe}
 ---
 
 <br>
-14 av 35 flaggor tror jag? Helt ok.
+14 av 35 flaggor tror jag? Helt ok för att vara min första CTF!
 <br><br>
 
 
