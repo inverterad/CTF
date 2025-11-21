@@ -1,7 +1,7 @@
 # CRATE 2025
 2025-11-15 - 14:00-22:00
 
-https://ctf.crate.foi.se/
+https://ctf.crate.foi.se/challenges
 
 
 ## Pin1.5
@@ -38,9 +38,6 @@ cratectf{maybe_start_using_txt_records_instead_of_s3_buckets}
 ## Ekobegäran
 Uppvärmning # 4
 
-
-"Något har blivit galet med vår ekoresponsgenerator."
-
 ping eko.crate.nu
 
 ping: Warning: invalid tv_usec -2315526826548157170 us
@@ -69,12 +66,7 @@ cratectf{pingpongpingpongpingpong}ongpin
 ## Kan man verkligen ändra sig?
 Uppvärmning #5
 
-
-"Att läsa in 256 byte i en 8 byte stor buffert går väl bra? Kompilatorn borde väl klaga ifall koden är sårbar? I och för sig har det här programmet alltid behövt kompileras med varningar avstängda...
-
-Uppgiften går att lösa i en webbläsarbaserad terminal via den här länken, eller genom att prata direkt med tjänsten via kommandot nedan.
-
-http://challs.crate.nu:1337/wetty?image=ctf/kanmanverkligenandrasig"
+http://challs.crate.nu:1337/wetty?image=ctf/kanmanverkligenandrasig
 
 Hmm..Den här löste sig självt i princip. Startade enligt instruktioner och skrev in ett lite för långt ord antar jag så jag kom åt flaggan. Ordet jag valde var "hejsanhopp"
 
@@ -82,6 +74,8 @@ cratectf{this_is_why_we_need_buffer_overflow_protections}
 
 ## Kan man verkligen ändra sig 2?
 Uppvärmning #6
+
+http://challs.crate.nu:1337/wetty?image=ctf/kanmanverkligenandrasig2
 
 
 Här provar jag mig fram manuellt tills jag förstår hur man ska få till rätt kombination.
@@ -93,12 +87,7 @@ cratectf{surely_this_cannot_be_used_to_execute_code?_right?}
 ## 2⁰-faktorautentisering
 Uppvärmning #7
 
-
-"Visst är det jobbigt att hålla koll på allt det här med tvåfaktorautentisering? Vore det inte smidigt om man kunde ta emot tvåfaktor-SMS utan att ha telefonen med sig? Prova vår smidiga 2FAAS (2-factor-as-a-service)-tjänst idag!
-
-Hur fungerar den? Jo vi använder en uppsättning toppmoderna mobiltelefoner där varje användare får en egen säker förbindelse till en av telefonerna via en serieport där man kan skicka AT-kommandon. Sen är det bara att ange tjänstens telefonnummer när man registrerar sig på valfri tjänst och så kan man ta emot koder utan att ha telefonen med sig!
-
-nc challs.crate.nu 15167"
+nc challs.crate.nu 15167
 
 AT = OK
 Allt annat = ERROR
@@ -114,9 +103,10 @@ cratectf{680279264}
 
 
 ## Eskuel
-SQL?
 
 http://challs.crate.nu:8901/
+
+SQL kanske?
 
 gobuster dir -u http://challs.crate.nu:8901/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x php
 
@@ -135,7 +125,7 @@ sqlmap började i alla fall att spotta ur sig massor med mer information än tid
 Flaggan:
 cratectf{efterföljarinsprutning}
 
-<br>Jag blev varse om programmet sqlmap i och med den här flaggan och tänkte inte på att det här var ett verktyg som bruteforce:ar. Vilket enligt reglerna skulle undvikas. Men man lär sig så länge man lever.
+<br>Jag blev varse om programmet sqlmap i och med den här flaggan och tänkte inte på att det här var ett verktyg som bruteforce:ar. Hade inte tänkt på att gobuster är använder sig av bruteforce också. Vilket enligt reglerna skulle undvikas. Men man lär sig så länge man lever.
 
 ## Eventually a Flag
 
@@ -150,6 +140,8 @@ def fibonacci(n):
 cratectf{en ganska så lång flagga. mycket taskigt va? aja, den kanske tar slut någon gång.... eller?? abcdefghijklmnopqrstuvwxyzåäö:))) hejdå!}
 
 ## Kattallergiker
+
+http://challs.crate.nu:1337/wetty?image=ctf/kattallergiker
 
 Blev tvungen att ta chatgpt till hjälp för att få fram korrekt kod för att få ut flaggan.
 Jag var inte bekant alls med språket som jag använde till slut. All kod fick jag från ChatGPT, vilket känns tråkigt, men då det var ett helt nytt shell för mig och språket var helt främmande så ansåg jag att det var ok. Ska försöka ta reda på lite mer om den typen av shell som användes här.
@@ -171,6 +163,8 @@ cratectf{det_är_ändå_rätt_nice_att_ha_lite_shell_utilities}
 
 ## En snäll liten server
 
+https://challs.crate.nu:35486/
+
 CVE-2014-0160 = Heartbleed
 
 Använde metasploits modul för heartbleed och fick ändra till TLS 1.1 från 1.0 för att den skulle visa flaggan när jag körde en dump.
@@ -182,6 +176,9 @@ cratectf{oj_den_var_visst_lite_for_snall}
 cratectf{hoppas_vi_ses_igen_2026}
 
 ## Buslätt
+<i>"Var finns skylten? Position med decimalgrader."</i>
+
+http://challs.crate.nu:41242
 
 Den här var klurig, det tog nästan hela dagen och jag löste det tack vare att jag berättade för min sambo om problemet och när jag läste upp beskrivningen så tänkte jag en gång extra på varför det stod Buslätt med stort B och sedan var det bara en googling bort.
 
@@ -191,6 +188,7 @@ Hållplats Buslätt, Uddevalla
 cratectf{en_sl\u00e4tt_som_heter_bu}
 
 ## Evenemang
+
 
 Lite pinsamt hur jag löste det, letade fram alla .exe-processer som startade med Id 4688 och sedan kollade jag på dem en efter en tills en såg annorlunda ut, visade sig att parent process var 756.exe på en och det visade sig vara boven.
 
