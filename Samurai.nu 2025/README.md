@@ -232,3 +232,69 @@ Faktiska koden jag använde till slut, en del skriven av mig och en del av AI.
     io.interactive()
 
 Nice! Here is your flag: O24{fast_fingers_or_fast_code}
+
+## FlagInThePackets
+
+Ännu ett för mig klurigt och roligt rum!
+
+Jag började med att öppna filen i Wireshark och tittade på TCP streamen, där hittade jag följande text:
+
+![Ledtråd 1](<Skärmbild 2025-12-18 flaginthepacket - wireshark.png>)
+
+Det fick mig att tänka på att jag nog kan extrahera alla liknande i terminalen med:
+
+
+ strings capture.pcap | grep "You picked up the"         
+
+    You picked up the I character at position 29:12/1
+    You picked up the P character at position 31:1541
+    You picked up the T character at position 33:1671
+    You picked up the T character at position 33:1771
+    You picked up the M character at position 17:15@1
+    You picked up the N character at position 15:17B1
+    You picked up the R character at position 5:16E1
+    You picked up the _ character at position 3:12O1
+    You picked up the I character at position 1:15R1
+    You picked up the R character at position 21:5
+    You picked up the O character at position 9:5
+    You picked up the 2 character at position 7:1
+    You picked up the { character at position 2:5
+    You picked up the O character at position 1:1
+    You picked up the D character at position 31:5
+    You picked up the A character at position 53:16R2
+    You picked up the O character at position 47:15Z2
+    You picked up the E character at position 43:11_2
+    You picked up the 4 character at position 55:3m2
+    You picked up the S character at position 57:12x2
+    You picked up the _ character at position 57:13x2
+    You picked up the R character at position 55:11
+    You picked up the } character at position 57:17
+
+Efter det så satt jag och klurade och frågade AI vad positionerna kunde betyda, den ville att det skulle vara byte-positioner och det ena med det andra. Men den tyckte att jag skulle titta efter kolon-tecknet. Vilket jag till slut gjorde och eftersom jag vet att flaggan börjar med O24{ och slutar med } så började jag sätta dem i ordning manuellt och landade till slut på följande:
+
+    You picked up the O character at position 1:1
+    You picked up the 2 character at position 7:1
+    You picked up the 4 character at position 55:3m2
+    You picked up the { character at position 2:5
+    You picked up the O character at position 9:5
+    You picked up the R character at position 21:5
+    You picked up the D character at position 31:5
+    You picked up the E character at position 43:11_2
+    You picked up the R character at position 55:11
+    You picked up the _ character at position 3:12O1
+    You picked up the I character at position 29:12/1
+    You picked up the S character at position 57:12x2
+    You picked up the _ character at position 57:13x2
+    You picked up the I character at position 1:15R1
+    You picked up the M character at position 17:15@1
+    You picked up the P character at position 31:1541
+    You picked up the O character at position 47:15Z2
+    You picked up the R character at position 5:16E1
+    You picked up the T character at position 33:1671
+    You picked up the A character at position 53:16R2
+    You picked up the N character at position 15:17B1
+    You picked up the T character at position 33:1771
+    You picked up the } character at position 57:17
+
+Flagga: O24{ORDER_IS_IMPORTANT}
+
