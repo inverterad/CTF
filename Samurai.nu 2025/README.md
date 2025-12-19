@@ -298,3 +298,175 @@ Efter det så satt jag och klurade och frågade AI vad positionerna kunde betyda
 
 Flagga: O24{ORDER_IS_IMPORTANT}
 
+# WARMUP: Stego
+
+Det här var en av de första jag provade under dag ett. Jag ska göra en ny omgång nu och se om jag missade något förra gången.
+
+ exiftool stego.jpg
+
+    ExifTool Version Number         : 13.36
+    File Name                       : stego.jpg
+    Directory                       : .
+    File Size                       : 473 kB
+    File Modification Date/Time     : 2025:12:15 16:26:39+01:00
+    File Access Date/Time           : 2025:12:18 14:00:48+01:00
+    File Inode Change Date/Time     : 2025:12:18 14:00:48+01:00
+    File Permissions                : -rw-rw-r--
+    File Type                       : JPEG
+    File Type Extension             : jpg
+    MIME Type                       : image/jpeg
+    JFIF Version                    : 1.01
+    Resolution Unit                 : inches
+    X Resolution                    : 96
+    Y Resolution                    : 96
+    Image Width                     : 1536
+    Image Height                    : 1024
+    Encoding Process                : Baseline DCT, Huffman coding
+    Bits Per Sample                 : 8
+    Color Components                : 3
+    Y Cb Cr Sub Sampling            : YCbCr4:2:0 (2 2)
+    Image Size                      : 1536x1024
+    Megapixels                      : 1.6
+
+
+ binwalk stego.jpg  
+
+    DECIMAL       HEXADECIMAL     DESCRIPTION
+    --------------------------------------------------------------------------------
+    0             0x0             JPEG image data, JFIF standard 1.01
+
+steghide extract -sf stego.jpg
+
+    Enter passphrase: 
+    steghide: could not extract any data with that passphrase!
+
+Jag provade köra strings stego.jpg, inget utmärkande såg ut att finnas där.
+
+convert stego.jpg -channel Red -separate red_channel.png
+
+convert stego.jpg -channel Green -separate green_channel.png
+
+convert stego.jpg -channel Blue -separate blue_channel.png
+
+convert stego.jpg -edge 1 stego_edges.png
+
+Tittar på alla bilderna och kan inte se något uppenbart.
+
+ binwalk red_channel.png
+
+    DECIMAL       HEXADECIMAL     DESCRIPTION
+    --------------------------------------------------------------------------------
+    0             0x0             PNG image, 1536 x 1024, 8-bit grayscale, non-interlaced
+    95            0x5F            Zlib compressed data, best compression
+
+Efter ovanstående försökte jag extrahera zlib-datan, men det kändes för djuptgående. Så jag går vidare.
+
+zsteg stego.png      
+
+    meta date:create    .. text: "2025-12-18T13:00:48+00:00"
+    meta date:modify    .. text: "2025-12-15T15:26:39+00:00"
+    meta date:timestamp .. text: "2025-12-18T13:39:13+00:00"
+    imagedata           .. text: "\n\n\n\r\r\r\t\t\t"
+    b2,r,lsb,xy         .. text: "UQTE-@ZASLi"
+    b2,g,lsb,xy         .. text: "dUUUZUY@iF"
+    b2,g,msb,xy         .. file: OpenPGP Public Key
+    b4,r,lsb,xy         .. text: "ECDD\"\"fffUDDD!"
+    b4,g,lsb,xy         .. file: TeX font metric data
+    b4,b,lsb,xy         .. text: "DT3EVfUgDC3D3EUB4C4CDETD3DDDDUUg#333!"
+    b4,rgb,lsb,xy       .. text: "A%\"2#A5$af"
+    b4,bgr,lsb,xy       .. text: "!2#\"1D%af"
+
+zsteg stego.png -E b2,g,msb,xy > key.bin
+
+ file key.bin 
+
+    key.bin: OpenPGP Public Key
+
+
+strings key.bin | grep "O24" verkar inte ha gett något.
+
+gpg --list-packets key.bin
+
+    gpg: keybox '/home/kali/.gnupg/pubring.kbx' created
+    gpg: packet(6) with unknown version 160
+    # off=0 ctb=9a tag=6 hlen=5 plen=1621647402
+    :key packet: [unknown version]
+
+Då kollar vi i /home/kali/.gnuopg/pubring.kbx
+
+Ingenting av värde där heller. Känns som jag börjar vara ute och cyklar igen.
+
+Tyvärr måste jag nog överge det här rummet ändå. Det känns som att jag inte kommer på något mer själv och jag har dividerat väldigt mycket fram och tillbaka med AI utan framgång.
+
+## Silent Knight
+
+Öppnade Burp igen för att titta runt. Hittade inte så mycket. Frågade AI efter idéer eftersom det inte fanns så mycket ledtrådar. Läste om texten och fick känslan att det borde ha med git eller något att göra. Frågade AI lite mer och den föreslog att jag skulle prova om jag kom åt /dev/ vilket jag gjorde!
+
+http://165.22.24.188:3000/dev/.git/logs/HEAD 
+
+    0000000000000000000000000000000000000000 a4370e16394b6d237ed364a83866348e7cedcda3 Kenshi Kringle <kringle@silentknight.com> 1765179060 +0000	commit (initial): Initial commit O24{giTing_
+
+Så jag bestämde mig för att ladda hem alltihop så det är lättare att titta närmare på saker.
+
+ wget -r -np -nH --cut-dirs=1 -R "index.html" http://165.22.24.188:3000/dev/.git/
+
+
+    ...
+    FINISHED --2025-12-19 08:08:30--
+    Total wall clock time: 12s
+    Downloaded: 270 files, 5.2M in 0.3s (19.3 MB/s)
+
+Nu ska vi testa trufflehog för första gången, se om det fungerar som jag tror och hoppas.
+
+Det fungerade inte som jag hade hoppats, det söker efter specifika saker, inte riktigt det jag var ute efter, men såhär i efterhand så verkar det ha gjort ett dåligt jobb också, för det borde faktiskt ha hittat andra delen av flaggan eftersom andra delen var ett password inbäddat i git-grejerna.
+
+I alla fall. Jag provade väldigt mycket saker efter trufflehog, jag konverserade mycket med AI för att komma framåt och det tog mig ett par timmars arbete. Som tidigare sagt så är jag oerfaren och kan inte hur git fungerar exakt men har lärt mig en del om det hela nu gällande tree-strukturer och hur .git/objects/ har en massa hash-filer som man kan titta i osv osv.
+
+Jag fick känslan att det var någon borttagen fil eller liknande som innehöll andra delen av flaggan. Jag försökte med hjälp av "relevanta" commits packa upp vissa hashar för att läsa innehållet och förhoppningsvis ta mig vidare, jag använde ett AI-genererat script till detta som såg ut såhär:
+
+
+    #!/bin/bash
+    # Script: decompress_git_object.sh
+    # Usage: ./decompress_git_object.sh <git-object-file>
+
+    if [ -z "$1" ]; then
+        echo "Usage: $0 <git-object-file>"
+        exit 1
+    fi
+
+    FILE="$1"
+
+    python3 - <<EOF
+    import zlib
+    data = open("$FILE", "rb").read()
+    print(zlib.decompress(data).decode('utf-8', errors='replace'))
+    EOF
+
+Det var mycket användbart för det ändamålet. Jag kunde alltså skriva:
+
+./unpack.sh .git/object/xx/resten-av-hashen
+
+Och med det så fick jag innehållet och kunde försöka traggla mig vidare. Men när jag förstod att jag inte kommer hitta något vettigt på det här sättet så skapade jag följande script med hjälp av AI:
+
+    for file in .git/objects/*/*; do
+        ./unpack.sh "$file"
+    done > tmp/allt.txt
+
+Det här borde då, om jag förstått det rätt, extrahera allt från alla hashes och stoppa det i min allt.txt-fil. För att göra det läsbart för mig så körde jag:
+
+strings allt.txt > allt2.txt
+
+grep "}" allt2.txt | less
+
+Och det första jag ser är:
+
+    const controller = {}
+        res.render('login', { message: 'Login Page' });
+        if (username === "admin" && password === "b3ttEr_I_se3}") {
+            res.send({ "message": "Successful login" })
+        } else {
+        }
+
+Lärorikt och frustrerande men nu har jag äntligen hela flaggan som är:
+
+O24{giTing_b3ttEr_I_se3}
