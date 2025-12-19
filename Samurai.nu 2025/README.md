@@ -398,6 +398,25 @@ Ingenting av värde där heller. Känns som jag börjar vara ute och cyklar igen
 
 Tyvärr måste jag nog överge det här rummet ändå. Det känns som att jag inte kommer på något mer själv och jag har dividerat väldigt mycket fram och tillbaka med AI utan framgång.
 
+---
+
+Nu är jag tillbaka efter jag löst Silent Knight och det är dagen efter. Jag fick ett tips från min klasskamrat Nico och det gav frukt. Jag fortsatte prova ett par till stego-verktyg som jag inte hade provat än. Var dock och nosade på stegocracker en sväng tidigare, men det visade sig vara programmet stegoseek. När jag väl körde det så gick det vägen.
+
+
+ stegseek stego.jpg
+
+    StegSeek 0.6 - https://github.com/RickdeJager/StegSeek
+
+    [i] Found passphrase: "star"
+    [i] Original filename: "secret.txt".
+    [i] Extracting to "stego.jpg.out".
+
+cat stego.jpg.out 
+
+    O24{merry_stego}
+
+
+
 ## Silent Knight
 
 Öppnade Burp igen för att titta runt. Hittade inte så mycket. Frågade AI efter idéer eftersom det inte fanns så mycket ledtrådar. Läste om texten och fick känslan att det borde ha med git eller något att göra. Frågade AI lite mer och den föreslog att jag skulle prova om jag kom åt /dev/ vilket jag gjorde!
@@ -470,3 +489,203 @@ Och det första jag ser är:
 Lärorikt och frustrerande men nu har jag äntligen hela flaggan som är:
 
 O24{giTing_b3ttEr_I_se3}
+
+
+## Eco-cracker
+
+ hashcat hash.txt  
+        
+    hashcat (v7.1.2) starting in autodetect mode
+
+    OpenCL API (OpenCL 3.0 PoCL 6.0+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 18.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
+    ====================================================================================================================================================
+    * Device #01: cpu-haswell-AMD Ryzen 5 5600X 6-Core Processor, 2949/5898 MB (1024 MB allocatable), 2MCU
+
+    The following 12 hash-modes match the structure of your input hash:
+
+        # | Name                                                       | Category
+    ======+============================================================+======================================
+        900 | MD4                                                        | Raw Hash
+        0 | MD5                                                        | Raw Hash
+        70 | md5(utf16le($pass))                                        | Raw Hash
+    2600 | md5(md5($pass))                                            | Raw Hash salted and/or iterated
+    3500 | md5(md5(md5($pass)))                                       | Raw Hash salted and/or iterated
+    4400 | md5(sha1($pass))                                           | Raw Hash salted and/or iterated
+    20900 | md5(sha1($pass).md5($pass).sha1($pass))                    | Raw Hash salted and/or iterated
+    32800 | md5(sha1(md5($pass)))                                      | Raw Hash salted and/or iterated
+    4300 | md5(strtoupper(md5($pass)))                                | Raw Hash salted and/or iterated
+    1000 | NTLM                                                       | Operating System
+    9900 | Radmin2                                                    | Operating System
+    8600 | Lotus Notes/Domino 5                                       | Enterprise Application Software (EAS)
+
+Misstänker med andra ord MD5, styckar upp hashen så att den ska kunna bli hanterad av hashcat, nu ser hashen ut såhär:
+
+    8ce954926cac44106bab666256c91fe6:g7k9b2q1
+
+hashcat -m 10 fixed_saltedhash.txt -a 3 -O ?l?l?l?l?l?l?l?l --custom-charset1=abcdefghijklmnopqrstuvwxyz0123456789
+
+
+    Session..........: hashcat                                
+    Status...........: Exhausted
+    Hash.Mode........: 10 (md5($pass.$salt))
+    Hash.Target......: 8ce954926cac44106bab666256c91fe6:g7k9b2q1
+    Time.Started.....: Fri Dec 19 14:44:18 2025 (29 mins, 12 secs)
+    Time.Estimated...: Fri Dec 19 15:13:30 2025 (0 secs)
+    Kernel.Feature...: Optimized Kernel (password length 0-55 bytes)
+    Guess.Mask.......: ?l?l?l?l?l?l?l?l [8]
+    Guess.Charset....: -1 abcdefghijklmnopqrstuvwxyz0123456789, -2 N/A, -3 N/A, -4 N/A, -5 N/A, -6 N/A, -7 N/A, -8 N/A 
+    Guess.Queue......: 1/1 (100.00%)
+    Speed.#01........:   120.8 MH/s (11.71ms) @ Accel:817 Loops:1024 Thr:1 Vec:8
+    Recovered........: 0/1 (0.00%) Digests (total), 0/1 (0.00%) Digests (new)
+    Progress.........: 208827064576/208827064576 (100.00%)
+    Rejected.........: 0/208827064576 (0.00%)
+    Restore.Point....: 11881376/11881376 (100.00%)
+    Restore.Sub.#01..: Salt:0 Amplifier:17408-17576 Iteration:0-1024
+    Candidate.Engine.: Device Generator
+    Candidates.#01...: fkxdiwvq -> xqxqxqgx
+    Hardware.Mon.#01.: Util: 92%
+
+    Started: Fri Dec 19 14:44:16 2025
+    Stopped: Fri Dec 19 15:13:32 2025
+
+Det här fungerade inte, så vi provar åt andra hållet.
+
+hashcat -m 20 fixed_saltedhash2.txt -a 3 -O ?l?l?l?l?l?l?l?l --custom-charset1=abcdefghijklmnopqrstuvwxyz0123456789
+
+Men det fungerar inte heller, den tycker att det är felaktigt:
+
+    hashcat (v7.1.2) starting
+
+    OpenCL API (OpenCL 3.0 PoCL 6.0+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 18.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
+    ====================================================================================================================================================
+    * Device #01: cpu-haswell-AMD Ryzen 5 5600X 6-Core Processor, 2949/5898 MB (1024 MB allocatable), 2MCU
+
+    Minimum password length supported by kernel: 0
+    Maximum password length supported by kernel: 55
+    Minimum salt length supported by kernel: 0
+    Maximum salt length supported by kernel: 51
+
+    Hashfile 'fixed_saltedhash2.txt' on line 1 (g7k9b2...8ce954926cac44106bab666256c91fe6): Token length exception
+
+    * Token length exception: 1/1 hashes
+    This error happens if the wrong hash type is specified, if the hashes are
+    malformed, or if input is otherwise not as expected (for example, if the
+    --username or --dynamic-x option is used but no username or dynamic-tag is present)
+
+    No hashes loaded.
+
+    Started: Fri Dec 19 15:32:58 2025
+    Stopped: Fri Dec 19 15:32:58 2025
+
+Provar kolla vad den tycker att den korrigerade "8ce954926cac44106bab666256c91fe6:g7k9b2q1" funkar med:
+
+hashcat fixed_saltedhash.txt                                                                                          
+
+
+    hashcat (v7.1.2) starting in autodetect mode
+
+    OpenCL API (OpenCL 3.0 PoCL 6.0+debian  Linux, None+Asserts, RELOC, SPIR-V, LLVM 18.1.8, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
+    ====================================================================================================================================================
+    * Device #01: cpu-haswell-AMD Ryzen 5 5600X 6-Core Processor, 2949/5898 MB (1024 MB allocatable), 2MCU
+
+    The following 27 hash-modes match the structure of your input hash:
+
+        # | Name                                                       | Category
+    ======+============================================================+======================================
+        10 | md5($pass.$salt)                                           | Raw Hash salted and/or iterated
+        20 | md5($salt.$pass)                                           | Raw Hash salted and/or iterated
+    3800 | md5($salt.$pass.$salt)                                     | Raw Hash salted and/or iterated
+    3710 | md5($salt.md5($pass))                                      | Raw Hash salted and/or iterated
+    33100 | md5($salt.md5($pass).$salt)                                | Raw Hash salted and/or iterated
+    4110 | md5($salt.md5($pass.$salt))                                | Raw Hash salted and/or iterated
+    4010 | md5($salt.md5($salt.$pass))                                | Raw Hash salted and/or iterated
+    21300 | md5($salt.sha1($salt.$pass))                               | Raw Hash salted and/or iterated
+        40 | md5($salt.utf16le($pass))                                  | Raw Hash salted and/or iterated
+    3910 | md5(md5($pass).md5($salt))                                 | Raw Hash salted and/or iterated
+    2630 | md5(md5($pass.$salt))                                      | Raw Hash salted and/or iterated
+    30500 | md5(md5($salt).md5(md5($pass)))                            | Raw Hash salted and/or iterated
+    3610 | md5(md5(md5($pass)).$salt)                                 | Raw Hash salted and/or iterated
+    4410 | md5(sha1($pass).$salt)                                     | Raw Hash salted and/or iterated
+    4420 | md5(sha1($pass.$salt))                                     | Raw Hash salted and/or iterated
+    21200 | md5(sha1($salt).md5($pass))                                | Raw Hash salted and/or iterated
+    4430 | md5(sha1($salt.$pass))                                     | Raw Hash salted and/or iterated
+        30 | md5(utf16le($pass).$salt)                                  | Raw Hash salted and/or iterated
+        50 | HMAC-MD5 (key = $pass)                                     | Raw Hash authenticated
+        60 | HMAC-MD5 (key = $salt)                                     | Raw Hash authenticated
+    1100 | Domain Cached Credentials (DCC), MS Cache                  | Operating System
+        12 | PostgreSQL                                                 | Database Server
+    22800 | Simpla CMS - md5($salt.$pass.md5($pass))                   | Forums, CMS, E-Commerce
+    2811 | MyBB 1.2+, IPB2+ (Invision Power Board)                    | Forums, CMS, E-Commerce
+    2611 | vBulletin < v3.8.5                                         | Forums, CMS, E-Commerce
+    2711 | vBulletin >= v3.8.5                                        | Forums, CMS, E-Commerce
+        23 | Skype                                                      | Instant Messaging Service
+
+Jag måste ändå packa och städa idag, så den får tugga på med följande kommando:
+
+hashcat -m 20 fixed_saltedhash.txt -a 3 -O ?l?l?l?l?l?l?l?l -1 --custom-charset1=abcdefghijklmnopqrstuvwxyz0123456789 
+
+    Session..........: hashcat                                
+    Status...........: Exhausted
+    Hash.Mode........: 20 (md5($salt.$pass))
+    Hash.Target......: 8ce954926cac44106bab666256c91fe6:g7k9b2q1
+    Time.Started.....: Fri Dec 19 15:33:09 2025 (41 mins, 47 secs)
+    Time.Estimated...: Fri Dec 19 16:14:56 2025 (0 secs)
+    Kernel.Feature...: Optimized Kernel (password length 0-55 bytes)
+    Guess.Mask.......: ?l?l?l?l?l?l?l?l [8]
+    Guess.Charset....: -1 --custom-charset1=abcdefghijklmnopqrstuvwxyz0123456789, -2 N/A, -3 N/A, -4 N/A, -5 N/A, -6 N/A, -7 N/A, -8 N/A 
+    Guess.Queue......: 1/1 (100.00%)
+    Speed.#01........: 72797.2 kH/s (11.24ms) @ Accel:531 Loops:1024 Thr:1 Vec:8
+    Recovered........: 0/1 (0.00%) Digests (total), 0/1 (0.00%) Digests (new)
+    Progress.........: 208827064576/208827064576 (100.00%)
+    Rejected.........: 0/208827064576 (0.00%)
+    Restore.Point....: 11881376/11881376 (100.00%)
+    Restore.Sub.#01..: Salt:0 Amplifier:17408-17576 Iteration:0-1024
+    Candidate.Engine.: Device Generator
+    Candidates.#01...: fkxxvxqf -> xqxqxqgx
+    Hardware.Mon.#01.: Util: 90%
+
+    Started: Fri Dec 19 15:33:07 2025
+    Stopped: Fri Dec 19 16:14:58 2025
+
+Jag hinner inte fortsätta nu, så pausar tills vidare det här rummet.
+
+## WARMUP: Pitchy
+
+Jag googlade ackord-följden och kom fram till den här sidan:
+https://inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies
+
+Ganska snabbt insåg jag att MIDI note number borde funka med ascii-koder, så vi går till:  
+https://www.ascii-code.com/
+
+    G5	    79	    O
+    D3	    50	    2
+    E3	    52	    4
+    D#9	    123	    {
+    F#5	    78	    N
+    F7	    101 	e
+    A#8	    118	    v
+    F7	    101 	e
+    Gb8	    114	    r
+    B6  	95  	_
+    B4	    71	    G
+    D#8 	111 	o
+    D8	    110 	n
+    D8	    110	    n
+    C#7 	97	    a
+    B6  	95	    _
+    B4	    71	    G
+    A7	    105 	i
+    A#8	    118 	v
+    F7	    101	    e
+    B6	    95	    _
+    F6	    89	    Y
+    Eb8	    111	    o
+    A8  	117	    u
+    B6	    95	    _
+    C#6	    85	    U
+    E8	    112	    p
+    F9	    125	    }
+
+Det visade sig att jag hade rätt och så fick jag fram flaggan:
+
+O24{Never_Gonna_Give_You_Up}
