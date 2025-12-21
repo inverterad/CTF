@@ -649,6 +649,8 @@ hashcat -m 20 fixed_saltedhash.txt -a 3 -O ?l?l?l?l?l?l?l?l -1 --custom-charset1
 
 Jag hinner inte fortsätta nu, så pausar tills vidare det här rummet.
 
+Det visade sig att 19:e december var sista dagen för eventet, så jag fick inte fortsätta på den här. Tråkigt.
+
 ## WARMUP: Pitchy
 
 Jag googlade ackord-följden och kom fram till den här sidan:
@@ -689,3 +691,11 @@ https://www.ascii-code.com/
 Det visade sig att jag hade rätt och så fick jag fram flaggan:
 
 O24{Never_Gonna_Give_You_Up}
+
+## Resultat
+
+Det tog visst slut, trodde av någon anledning det skulle sträcka sig över helgen också. Men med juletider så hade jag inte tid med mer förrän nu.
+
+Men i slutändan blev jag grupp 36 av 80 med totalt 1650 poäng. Riktigt kul event!
+
+![Resultat](<Screenshot 2025-12-21 resultat.png>)
