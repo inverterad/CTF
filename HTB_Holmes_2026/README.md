@@ -32,7 +32,9 @@ Provar att köra Profanity för att titta närmare på XMPP, men det går inte b
     openssl s_client -connect murknet.htb:5222 -starttls xmpp -servername murknet.htb </dev/null 2>/dev/null \
       | openssl x509 -outform PEM > ~/.purple/certificates/x509/tls_peers/murknet.htb
 
-Med certet på plats funkar Pidgin och jag kan skapa ett konto. Går tillbaka till Profanity och kör en item discovery, vilket ger mig kanallistan:
+Med certet på plats funkar Pidgin och jag kan skapa ett konto. Går tillbaka till Profanity och kör en item discovery, vilket ger mig kanallistan och..
+
+## Flagga 2
 
     Infrastructure, Random, Resources, Rules
 
@@ -47,13 +49,13 @@ Ger mig:
     zytglogge88@murknet.htb
     swissclock
 
-## Gamla meddelanden
+## Flagga 3 och gamla meddelanden
 
 Letar vidare i Profanity och hittar kommandona `/history on` och `/mam on` för att se äldre meddelanden i kanalerna. Där hittar jag ett gammalt lösenord att prova, vilket visar sig fungera:
 
     zytglogge88@murknet.htb : TickTock24!
 
-## Flagga 4 - Operation Sparkling
+## Operation Sparkling
 
 Genom chattarna på det kontot hittar jag en länk:
 
@@ -63,7 +65,9 @@ Länken leder ingenstans längre, men via Wayback Machine hittar jag information
 
     https://stonedforums.htb/@porlock
 
-Lösenordet som nämns i rapporten fungerar för att dekryptera kommandon från Operation Sparkling. För att få fram de här måste jag använda mig av Gajim för att kunna skicka in råa XML-förfrågningar. I kommando 4 hittar vi fjärde flaggan:
+Lösenordet som nämns i rapporten fungerar för att dekryptera kommandon från Operation Sparkling. För att få fram de här måste jag använda mig av Gajim för att kunna skicka in råa XML-förfrågningar. I kommando 4 hittar vi...
+
+## Flagga 4
 
     429x3WVq1ucARGXx6NEwL4Sg4iowfW5ZWMAqEDErLxrWdg4ffkonB5tNxg85BKGjDqDQRfBERANhgf6DnGjjFyDR5L7uwye
 
@@ -83,7 +87,7 @@ Med den nyckeln kan jag dekryptera fler kommandon, vilket ger sjunde flaggan:
 
     Victoria Station
 
-## Sista flaggan
+## Flagga 8 - Kändes lite oförtjänt
 
 Av oklar anledning blir jag inbjuden till en chatt av en bot. Genom den konversationen får jag den sista flaggan:
 
